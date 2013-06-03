@@ -1,0 +1,16 @@
+PATH
+  remote: .
+  specs:
+    snp (0.1.rc0)
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    rake (10.0.4)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  rake
+  snp!
