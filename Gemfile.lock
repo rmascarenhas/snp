@@ -6,11 +6,15 @@ PATH
 GEM
   remote: http://rubygems.org/
   specs:
+    metaclass (0.0.1)
+    mocha (0.14.0)
+      metaclass (~> 0.0.1)
     rake (10.0.4)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  mocha
   rake
   snp!
