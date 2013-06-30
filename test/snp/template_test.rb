@@ -8,5 +8,13 @@ describe Snp::Template do
 
       template.resolve('template.erb').must_equal File.expand_path('~/.snp_templates/template.erb')
     end
+
+    it 'uses SNP_PATH environment variable if it is set' do
+      ENV['SNP_PATH'] = '/snp:/etc/snp'
+      File.stubs(:exists?).returns(true)
+
+      template = Snp::Template.new
+      template.resolve('template.erb').must_equal '/snp/template.erb'
+    end
   end
 end
