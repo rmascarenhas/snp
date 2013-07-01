@@ -18,16 +18,42 @@ module Snp
     # Returns a string with the full path of the template file, or nil if it is not
     # found.
     def resolve(template_file)
+      template_with_extension = append_extension(template_file)
+
       right_path = possible_paths.find do |path|
-        File.exists?(File.join(path, template_file))
+        File.exists?(File.join(path, template_with_extension))
       end
 
       if right_path
-        File.join(right_path, template_file)
+        File.join(right_path, template_with_extension)
       end
     end
 
     private
+
+    # Internal: appends an ERB extension to the template file name passed, unless it already
+    # contains one.
+    #
+    # template - the template file name.
+    #
+    # Examples:
+    #
+    # append_extension('template.erb') # => 'template.erb'
+    # append_extension('template')     # => 'template.erb'
+    def append_extension(template)
+      if has_erb_extension?(template)
+        template
+      else
+        template + '.erb'
+      end
+    end
+
+    # Internal: checks if the given name ends with '.erb'.
+    #
+    # template - the template file name.
+    def has_erb_extension?(template)
+      template[-4, 4] == '.erb'
+    end
 
     # Internal: returns the path to be used when searching for templates. Defined by
     # the SNP_PATH environment variable, defaulting to `~/.snp_templates`.

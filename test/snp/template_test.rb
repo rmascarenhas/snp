@@ -23,8 +23,14 @@ describe Snp::Template do
       template = Snp::Template.new
       File.stubs(:exists?).returns(false)
 
-      template = Snp::Template.new
       template.resolve('inexistent.erb').must_be_nil
+    end
+
+    it 'appends .erb extension when not given' do
+      template = Snp::Template.new
+      File.stubs(:exists?).returns(true)
+
+      template.resolve('template').must_equal File.expand_path('~/.snp_templates/template.erb')
     end
   end
 end
