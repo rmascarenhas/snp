@@ -15,6 +15,16 @@ describe Snp::Template do
 
       template = Snp::Template.new
       template.resolve('template.erb').must_equal '/snp/template.erb'
+
+      ENV['SNP_PATH'] = nil
+    end
+
+    it 'returns nil when there is no file with the given name' do
+      template = Snp::Template.new
+      File.stubs(:exists?).returns(false)
+
+      template = Snp::Template.new
+      template.resolve('inexistent.erb').must_be_nil
     end
   end
 end
