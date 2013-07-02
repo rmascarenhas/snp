@@ -8,18 +8,22 @@ module Snp
   #
   # Examples
   #
-  #   t = Snp::Template.new
-  #   t.resolve('jquery.erb') # => '/Users/john/.snp_templates/jquery.erb'
+  #   t = Snp::Template.new('jquery.erb')
+  #   t.absolute_path             # => '/Users/john/.snp_templates/jquery.erb'
+  #   t.compile(version: '1.9.3') # => '<html><head>...'
   class Template
-    # Public: resolves a template file by looking in the template path.
+    # Public: creates a new template instance.
     #
-    # template_file - the basename of the template to be resolved.
+    # template_file - the basename of the template file.
+    def initialize(template_file)
+      @file = template_file
+    end
+
+    # Public: resolves a template file by looking in the template path.
     #
     # Returns a string with the full path of the template file, or nil if it is not
     # found.
-    def resolve(template_file)
-      template_with_extension = append_extension(template_file)
-
+    def absolute_path
       right_path = possible_paths.find do |path|
         File.exists?(File.join(path, template_with_extension))
       end
