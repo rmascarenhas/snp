@@ -1,3 +1,5 @@
+require 'erb'
+
 module Snp
   # Snp::Template
   #
@@ -9,8 +11,8 @@ module Snp
   # Examples
   #
   #   t = Snp::Template.new('jquery.erb')
-  #   t.absolute_path             # => '/Users/john/.snp_templates/jquery.erb'
-  #   t.compile(version: '1.9.3') # => '<html><head>...'
+  #   t.absolute_path    # => '/Users/john/.snp_templates/jquery.erb'
+  #   t.compile(binding) # => '<html><head>...'
   class Template
     # Public: creates a new template instance.
     #
@@ -31,6 +33,15 @@ module Snp
       if right_path
         File.join(right_path, template_with_extension)
       end
+    end
+
+    # Public: compiles the template content to an effective snippet, ready to use.
+    #
+    # context - a `Binding` object to be used as context in the template compilation.
+    #
+    # Returns a string with the compiled template.
+    def compile(context)
+      ERB.new(template_content).result(context)
     end
 
     private
@@ -83,6 +94,17 @@ module Snp
     # Returns an array of strings with the expanded directory names.
     def possible_paths
       snp_path.map { |p| File.expand_path(p) }
+    end
+
+    # Internal: appends `.erb` exntesion to the template file name, unless it is
+    # already present.
+    def template_with_extension
+      append_extension(@file)
+    end
+
+    # Internal: returns a string with the content of the template file.
+    def template_content
+      File.read(absolute_path)
     end
   end
 end

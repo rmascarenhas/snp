@@ -33,4 +33,28 @@ describe Snp::Template do
       template.absolute_path.must_equal File.expand_path('~/.snp_templates/template.erb')
     end
   end
+
+  describe '#compile' do
+    class ERBContext
+      def greeting
+        'Hello'
+      end
+
+      def name
+        'snp'
+      end
+
+      def context
+        binding
+      end
+    end
+
+    it 'generates a string with the processed template' do
+      template_content = '<%= greeting %> from <%= name %>'
+      File.stubs(:read).returns(template_content)
+
+      template = Snp::Template.new('template.erb')
+      template.compile(ERBContext.new.context).must_equal 'Hello from snp'
+    end
+  end
 end
