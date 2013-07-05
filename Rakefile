@@ -3,7 +3,8 @@ require 'rake/testtask'
 task default: :test
 
 Rake::TestTask.new do |t|
-  t.libs.push "lib"
-  t.test_files = FileList['test/*_test.rb']
+  t.pattern = 'test/snp/*_test.rb'
+  t.libs.push 'test'
+  t.libs.push 'spec'
   t.verbose = true
 end
