@@ -13,6 +13,15 @@ module Snp
   #
   #   TemplateContext.for(title: 'My beautiful page')
   class TemplateContext
+    class InsufficientContext < StandardError
+      attr_reader :missing_property
+
+      def initialize(property)
+        @missing_property = property.to_s
+        super
+      end
+    end
+
     # Public: creates a new Snp::TemplateContext object.
     #
     # context - a hash of properties and values to be used in as context of the template.
@@ -29,6 +38,14 @@ module Snp
 
     def respond_to_missing?(method, *)
       @context.has_key?(method)
+    end
+
+    # In case an unknown method is called on the template context, we raise a proper
+    # exception that must be rescued and properly handled.
+    #
+    # Reaching this point means we need variables in the snippet that were not provided.
+    def method_missing(method, *)
+      raise InsufficientContext.new(method)
     end
 
     private
