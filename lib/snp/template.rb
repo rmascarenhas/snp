@@ -14,11 +14,14 @@ module Snp
   #   t.absolute_path    # => '/Users/john/.snp_templates/jquery.erb'
   #   t.compile(binding) # => '<html><head>...'
   class Template
+    attr_reader :path
+
     # Public: creates a new template instance.
     #
     # template_file - the basename of the template file.
-    def initialize(template_file)
+    def initialize(template_file, path = Snp::Path.dirs)
       @file = template_file
+      @path = path
     end
 
     # Public: resolves a template file by looking in the template path.
@@ -70,30 +73,11 @@ module Snp
       template[-4, 4] == '.erb'
     end
 
-    # Internal: returns the path to be used when searching for templates. Defined by
-    # the SNP_PATH environment variable, defaulting to `~/.snp_templates`.
-    def snp_path
-      path_from_env || default_path
-    end
-
-    # Internal: The default path to be used when the SNP_PATH environment variable
-    # is not set.
-    def default_path
-      ['~/.snp_templates']
-    end
-
-    # Internal: parses the SNP_PATH environment variable, if it is set. The format
-    # of this variable follows the same convention of the shell's PATH variable: a series
-    # of directories separated by a collon.
-    def path_from_env
-      ENV['SNP_PATH'] && ENV['SNP_PATH'].split(':')
-    end
-
     # Internal: expands each directory in the template path.
     #
     # Returns an array of strings with the expanded directory names.
     def possible_paths
-      snp_path.map { |p| File.expand_path(p) }
+      path.map { |p| File.expand_path(p) }
     end
 
     # Internal: appends `.erb` exntesion to the template file name, unless it is
