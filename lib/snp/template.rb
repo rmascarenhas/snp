@@ -73,7 +73,7 @@ module Snp
     # Internal: returns the path to be used when searching for templates. Defined by
     # the SNP_PATH environment variable, defaulting to `~/.snp_templates`.
     def snp_path
-      @_path = path_from_env || default_path
+      path_from_env || default_path
     end
 
     # Internal: The default path to be used when the SNP_PATH environment variable
