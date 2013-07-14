@@ -27,6 +27,12 @@ module Snp
     end
   end
 
+  class InvalidOptions < StandardError
+    def initialize(invalid_option)
+      super("Invalid option: #{invalid_option}")
+    end
+  end
+
   # Snp::CLI
   #
   # This class is responsible for parsing command line options passed to `snp` and
@@ -54,7 +60,7 @@ module Snp
       [template_name, template_data]
     rescue InvalidOptions => exception
       @stream.err exception.message
-      @stream.err option_parser
+      @stream.err option_parser.to_s
     end
 
     private
@@ -65,18 +71,24 @@ module Snp
     end
 
     def parse_dynamic_options
-      data = dynamic_parser.parse!(@params).to_hash
-      invalid_key = data.find { |key, value| value.nil? }
+      if @params.empty?
+        {}
+      else
+        dynamic_parser.parse!(@params)
 
-      if invalid_key
-        raise InvalidOptions.new(invalid_key.first)
+        data = dynamic_parser.to_hash
+        invalid_key = data.find { |key, value| value.nil? }
+
+        if invalid_key
+          raise InvalidOptions.new(invalid_key.first)
+        end
+
+        data
       end
-
-      data
     end
 
     def option_parser
-      Slop.new do |command|
+      @_option_parser ||= Slop.new do |command|
         command.banner "Usage: #{program_name} [options] [template_name]"
 
         command.on('-V', 'Shows version and exits') do
@@ -84,13 +96,13 @@ module Snp
         end
 
         command.on('-h', 'Shows this message') do
-          print_and_exit command
+          print_and_exit command.to_s
         end
       end
     end
 
     def dynamic_parser
-      Slop.new(autocreate: true)
+      @_dynamic_parser ||= Slop.new(autocreate: true)
     end
 
     def print_and_exit(message)
