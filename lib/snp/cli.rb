@@ -37,7 +37,7 @@ module Snp
   #
   #   CLI.parse_options # => ['/Users/john/.snp/jquery.html.erb', { version: '1.9' }]
   class CLI
-    def self.parse_options(arguments = ARGV)
+    def self.parse_options(arguments = ARGV.dup)
       new(arguments).parse
     end
 
@@ -52,11 +52,28 @@ module Snp
       template_data = parse_dynamic_options
 
       [template_name, template_data]
-    rescue InvalidOptions
+    rescue InvalidOptions => exception
+      @stream.err exception.message
       @stream.err option_parser
     end
 
     private
+
+    def parse_static_options
+      option_parser.parse!(@params)
+      @params.pop
+    end
+
+    def parse_dynamic_options
+      data = dynamic_parser.parse!(@params).to_hash
+      invalid_key = data.find { |key, value| value.nil? }
+
+      if invalid_key
+        raise InvalidOptions.new(invalid_key.first)
+      end
+
+      data
+    end
 
     def option_parser
       Slop.new do |command|
@@ -70,6 +87,10 @@ module Snp
           print_and_exit command
         end
       end
+    end
+
+    def dynamic_parser
+      Slop.new(autocreate: true)
     end
 
     def print_and_exit(message)
