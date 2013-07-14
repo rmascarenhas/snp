@@ -16,6 +16,8 @@ Gem::Specification.new do |s|
   s.test_files    = Dir['test/**/*.rb']
   s.require_paths = ['lib']
 
+  s.add_runtime_dependency 'slop'
+
   s.add_development_dependency 'mocha'
 
   s.rubyforge_project = 'snp'
