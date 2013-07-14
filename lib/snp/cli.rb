@@ -1,6 +1,32 @@
 require 'slop'
 
 module Snp
+  # Snp::StandardStream
+  #
+  # This class is responsible for outputing string in normal output and error streams.
+  # It defaults to `STDOUT` and `STDERR`, respectively but can be used to generate output
+  # for other streams.
+  #
+  # Example
+  #
+  #   stream = Snp::StandardStream.new
+  #   stream.out('Hello')  # => 'Hello' is written to the standard output
+  #   stream.err('ERROR!') # => 'ERROR!' is written to the standard error
+  class StandardStream
+    def initialize(out = STDOUT, err = STDERR)
+      @out = out
+      @err = err
+    end
+
+    def out(message)
+      @out.puts message
+    end
+
+    def err(message)
+      @err.puts message
+    end
+  end
+
   # Snp::CLI
   #
   # This class is responsible for parsing command line options passed to `snp` and
@@ -33,7 +59,7 @@ module Snp
     private
 
     def option_parser
-      Slop.new(autocreate: true) do |command|
+      Slop.new do |command|
         command.banner "Usage: #{program_name} [options] [template_name]"
 
         command.on('-V', 'Shows version and exits') do
