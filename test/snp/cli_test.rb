@@ -69,7 +69,7 @@ describe Snp::CLI do
       stream = TestStream.new
       cli = Snp::CLI.new(['--count', '3', 'some_name', 'snp'], stream)
 
-      cli.parse
+      no_exit { cli.parse }
 
       stream.error.must_match /Invalid option: some_name/
     end

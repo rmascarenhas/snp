@@ -61,6 +61,8 @@ module Snp
     rescue InvalidOptions => exception
       @stream.err exception.message
       @stream.err option_parser.to_s
+
+      exit 1
     end
 
     private
