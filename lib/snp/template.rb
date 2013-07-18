@@ -16,7 +16,7 @@ module Snp
     # Public: creates a new template instance.
     #
     # template_file - the basename of the template file.
-    def initialize(template_file, path = Snp::Path.new)
+    def initialize(template_file, path = Path.new)
       @file = template_file
       @path = path
     end
