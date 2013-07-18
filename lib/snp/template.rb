@@ -6,7 +6,7 @@ module Snp
   # The Template class represents a snippet definition through an ERB template.
   # Template files are looked in a series of directories that can be defined via
   # the SNP_PATH environment variable. By default, these snippet definitions are
-  # searched in the `.snp_templates` directory in your home directory.
+  # searched in the `.snp` directory in your home directory.
   #
   # Examples
   #

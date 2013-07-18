@@ -51,7 +51,7 @@ module Snp
     # Internal: The default path to be used when the SNP_PATH environment variable
     # is not set.
     def default_path
-      ['~/.snp_templates']
+      ['~/.snp']
     end
 
     # Internal: checks if the given name ends with the passed `extension`.
