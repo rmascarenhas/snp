@@ -1,6 +1,16 @@
 require 'erb'
 
 module Snp
+  # Snp::TemplateNotFound
+  #
+  # This exception is raised in case the template file passed is not found in any
+  # directory in snp path.
+  class TemplateNotFound < StandardError
+    def initialize(template_name, path)
+      super("Template #{template_name} was not found in #{path.inspect}")
+    end
+  end
+
   # Snp::Template
   #
   # The Template class represents a snippet definition through an ERB template.
@@ -27,7 +37,11 @@ module Snp
     #
     # Returns a string with the compiled template.
     def compile(context)
-      ERB.new(template_content).result(context)
+      if template_content
+        ERB.new(template_content).result(context)
+      else
+        raise TemplateNotFound.new(@file, @path.absolute_paths)
+      end
     end
 
     private
@@ -51,7 +65,9 @@ module Snp
 
     # Internal: returns a string with the content of the template file.
     def template_content
-      File.read(absolute_path)
+      if absolute_path
+        File.read(absolute_path)
+      end
     end
 
     # Internal: returns the absolute path to the template, or `nil`, in case it is
