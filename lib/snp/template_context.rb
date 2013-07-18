@@ -51,8 +51,13 @@ module Snp
     private
 
     # Internal: defines a method with `property` name, and returning `value`.
+    # If `value` is a boolean, this method will also define a predicate method.
     def define_property(property, value)
       define_singleton_method(property) { value }
+
+      if value == true || value == false
+        define_singleton_method("#{property}?") { value }
+      end
     end
   end
 end

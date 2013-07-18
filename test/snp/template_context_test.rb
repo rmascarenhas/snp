@@ -7,6 +7,12 @@ describe Snp::TemplateContext do
     context.name.must_equal 'snp'
   end
 
+  it 'generates predicate methods for boolean attributes' do
+    context = Snp::TemplateContext.new(awesome: true, sad: false)
+    context.awesome?.must_equal true
+    context.sad?.must_equal false
+  end
+
   it 'politely responds to methods named after context keys' do
     context = Snp::TemplateContext.new(snp: 'snp')
     context.must_respond_to(:snp)
