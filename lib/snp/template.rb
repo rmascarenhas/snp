@@ -11,31 +11,14 @@ module Snp
   # Examples
   #
   #   t = Snp::Template.new('jquery.erb')
-  #   t.absolute_path    # => '/Users/john/.snp_templates/jquery.erb'
   #   t.compile(binding) # => '<html><head>...'
   class Template
-    attr_reader :path
-
     # Public: creates a new template instance.
     #
     # template_file - the basename of the template file.
-    def initialize(template_file, path = Snp::Path.dirs)
+    def initialize(template_file, path = Snp::Path.new)
       @file = template_file
       @path = path
-    end
-
-    # Public: resolves a template file by looking in the template path.
-    #
-    # Returns a string with the full path of the template file, or nil if it is not
-    # found.
-    def absolute_path
-      right_path = possible_paths.find do |path|
-        File.exists?(File.join(path, template_with_extension))
-      end
-
-      if right_path
-        File.join(right_path, template_with_extension)
-      end
     end
 
     # Public: compiles the template content to an effective snippet, ready to use.
@@ -66,29 +49,15 @@ module Snp
       end
     end
 
-    # Internal: checks if the given name ends with '.erb'.
-    #
-    # template - the template file name.
-    def has_erb_extension?(template)
-      template[-4, 4] == '.erb'
-    end
-
-    # Internal: expands each directory in the template path.
-    #
-    # Returns an array of strings with the expanded directory names.
-    def possible_paths
-      path.map { |p| File.expand_path(p) }
-    end
-
-    # Internal: appends `.erb` exntesion to the template file name, unless it is
-    # already present.
-    def template_with_extension
-      append_extension(@file)
-    end
-
     # Internal: returns a string with the content of the template file.
     def template_content
       File.read(absolute_path)
+    end
+
+    # Internal: returns the absolute path to the template, or `nil`, in case it is
+    # not found.
+    def absolute_path
+      @path.which(@file, 'erb')
     end
   end
 end
