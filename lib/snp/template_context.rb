@@ -22,6 +22,11 @@ module Snp
       end
     end
 
+    # Public: returns the binding for the passed `attributes`.
+    def self.for(attributes)
+      new(attributes).erb_binding
+    end
+
     # Public: creates a new Snp::TemplateContext object.
     #
     # context - a hash of properties and values to be used in as context of the template.
@@ -34,6 +39,10 @@ module Snp
       context.each do |property, value|
         define_property(property, value)
       end
+    end
+
+    def erb_binding
+      binding
     end
 
     def respond_to_missing?(method, *)
@@ -51,8 +60,13 @@ module Snp
     private
 
     # Internal: defines a method with `property` name, and returning `value`.
+    # If `value` is a boolean, this method will also define a predicate method.
     def define_property(property, value)
       define_singleton_method(property) { value }
+
+      if value == true || value == false
+        define_singleton_method("#{property}?") { value }
+      end
     end
   end
 end

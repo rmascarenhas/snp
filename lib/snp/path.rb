@@ -6,16 +6,31 @@ module Snp
   #
   # Example
   #
-  #   Snp::Path.dirs # => ['/Users/john/.snp/templates', '/etc/snp']
+  #   Snp::Path.new.which('jquery') # => '/etc/snp/jquery.erb'
   class Path
-    # Public: returns the path to be used when searching for templates. Defined by
-    # the SNP_PATH environment variable, defaulting to `~/.snp_templates`.
-    def self.dirs
-      new.absolute_paths
-    end
-
+    # Internal: returns the list of absolute paths to the directories in which
+    # the templates should be looked.
     def absolute_paths
       dir_list.map { |d| File.expand_path(d) }
+    end
+
+    # Public: resolves a template file by looking in the template path.
+    #
+    # template  - the template name.
+    # extension - the extension of the desired template.
+    #
+    # Returns a string with the full path of the template file, or nil if it is not
+    # found.
+    def which(template, extension)
+      template_with_extension = with_extension(template, extension)
+
+      path = absolute_paths.find do |path|
+        File.exists?(File.expand_path(path, template_with_extension))
+      end
+
+      if path
+        File.join(path, template_with_extension)
+      end
     end
 
     private
@@ -36,7 +51,32 @@ module Snp
     # Internal: The default path to be used when the SNP_PATH environment variable
     # is not set.
     def default_path
-      ['~/.snp_templates']
+      ['~/.snp']
+    end
+
+    # Internal: checks if the given name ends with the passed `extension`.
+    #
+    # template - the template file name.
+    def has_extension?(template, extension)
+      template[-4, 4] == ".#{extension}"
+    end
+
+    # Internal: appends a given extension to the template file name, unless it is
+    # already present.
+    #
+    # template  - the template name.
+    # extension - the extension to be appended.
+    #
+    # Examples
+    #
+    #   with_extension('template', 'erb')    # => 'template.erb'
+    #   with_extension('template.erb', 'erb' # => 'template.erb'
+    def with_extension(template, extension)
+      if has_extension?(template, extension)
+        template
+      else
+        template + ".#{extension}"
+      end
     end
   end
 end

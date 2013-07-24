@@ -1,18 +1,9 @@
 require 'test_helper'
 
 describe Snp::Path do
-  describe '.dir' do
-    it 'delegates to `absolute_paths`' do
-      double = stub(absolute_paths: ['/'])
-      Snp::Path.stubs(:new).returns(double)
-
-      Snp::Path.dirs.must_equal ['/']
-    end
-  end
-
   describe '#absolute_paths' do
     it 'defaults to the user home directory' do
-      Snp::Path.new.absolute_paths.must_equal Array(File.expand_path('~/.snp_templates'))
+      Snp::Path.new.absolute_paths.must_equal Array(File.expand_path('~/.snp'))
     end
 
     it 'uses the value in the `SNP_PATH` variable when available' do
@@ -21,6 +12,30 @@ describe Snp::Path do
       Snp::Path.new.absolute_paths.must_equal [File.expand_path('~/.snp'), '/etc/snp']
 
       ENV['SNP_PATH'] = nil
+    end
+  end
+
+  describe '#which' do
+    def subject
+      Snp::Path.new
+    end
+
+    it 'is nil in case there is no file in the path' do
+      File.stubs(:exists?).returns(false)
+
+      subject.which('template', 'erb').must_be_nil
+    end
+
+    it 'returns the absolute path to the template appending the extension' do
+      File.stubs(:exists?).returns(true)
+
+      subject.which('snp', 'erb').must_equal File.expand_path('~/.snp/snp.erb')
+    end
+
+    it 'does not append extension if it template already has it' do
+      File.stubs(:exists?).returns(true)
+
+      subject.which('snp.erb', 'erb').must_equal File.expand_path('~/.snp/snp.erb')
     end
   end
 end
