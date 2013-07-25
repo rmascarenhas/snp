@@ -21,7 +21,7 @@ module Snp
     # extra_options - options to override default data to build the template.
     def initialize(template, extra_options)
       @template = template
-      @options = extra_options
+      @options  = extra_options
     end
 
     # Public: actually compiles the template.

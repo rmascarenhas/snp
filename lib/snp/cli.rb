@@ -54,8 +54,8 @@ module Snp
     #
     # This method returns an array in which the first element is the template name and the
     # second are the data that should be used to compile the template.
-    def self.parse_options(arguments = ARGV.dup)
-      new(arguments).parse
+    def self.run(arguments = ARGV.dup)
+      new(arguments).start
     end
 
     # Internal: creates a new `Snp::CLI` instance.
@@ -69,7 +69,21 @@ module Snp
       @stream  = stream
     end
 
-    # Internal: actually does the parsing job.
+    # Internal: actually does the parsing job and compiles the snippet.
+    def start
+      template_name, template_data = parse
+
+      snippet = Compiler.build(template_name, template_data)
+      @stream.out(snippet)
+    rescue => exception
+      @stream.err exception.message
+      help_and_exit
+    end
+
+    # Internal: parses command line options.
+    #
+    # Returns the template name and extra options to be used when compiling
+    # the snippet, extracted from command line arguments.
     def parse
       help_and_exit if no_options_passed?
 
@@ -77,9 +91,6 @@ module Snp
       template_data = parse_dynamic_options
 
       [template_name, template_data]
-    rescue InvalidOptions => exception
-      @stream.err exception.message
-      help_and_exit
     end
 
     private
