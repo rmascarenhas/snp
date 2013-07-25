@@ -25,7 +25,7 @@ module Snp
       template_with_extension = with_extension(template, extension)
 
       path = absolute_paths.find do |path|
-        File.exists?(File.expand_path(path, template_with_extension))
+        File.exists?(File.join(path, template_with_extension))
       end
 
       if path
