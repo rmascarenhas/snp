@@ -71,15 +71,15 @@ module Snp
 
     # Internal: actually does the parsing job.
     def parse
+      help_and_exit if no_options_passed?
+
       template_name = parse_static_options
       template_data = parse_dynamic_options
 
       [template_name, template_data]
     rescue InvalidOptions => exception
       @stream.err exception.message
-      @stream.err option_parser.to_s
-
-      exit 1
+      help_and_exit
     end
 
     private
@@ -150,6 +150,22 @@ module Snp
     # Internal: the program name to be used when generating output to the user.
     def program_name
       File.basename($0, '.*')
+    end
+
+    # Internal: prints help message and exits with a failure exit status.
+    def help_and_exit
+      @stream.err help_message
+      exit 1
+    end
+
+    # Internal: returns the help message for the `snp` command.
+    def help_message
+      option_parser.to_s
+    end
+
+    # Internal: checks whether or not any arguments were passed on the command line.
+    def no_options_passed?
+      @params.empty?
     end
   end
 end

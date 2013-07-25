@@ -33,6 +33,15 @@ describe Snp::CLI do
     rescue SystemExit
     end
 
+    it 'prints help message when no arguments are passed' do
+      stream = TestStream.new
+      cli    = Snp::CLI.new([], stream)
+
+      no_exit { cli.parse }
+
+      stream.output.wont_be_nil
+    end
+
     it 'can print version' do
       stream = TestStream.new
       cli    = Snp::CLI.new(['-V'], stream)
