@@ -38,7 +38,7 @@ module Snp
     # Returns a string with the compiled template.
     def compile(context)
       if template_content
-        ERB.new(template_content).result(context)
+        ERB.new(template_content, 0, '-').result(context)
       else
         raise TemplateNotFound.new(@file, @path.absolute_paths)
       end
