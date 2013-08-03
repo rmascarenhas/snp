@@ -1,36 +1,46 @@
 require 'test_helper'
+require 'snp/cli'
 
 describe Snp::CLI do
+  class TestStream
+    attr_reader :output, :error
+
+    def initialize
+      @output = ''
+      @error  = ''
+    end
+
+    def out(message)
+      @output << message
+    end
+
+    def err(message)
+      @error << message
+    end
+  end
+
   describe '.parse_options' do
-    it 'delegates to #parse' do
-      double = stub(parse: 'double')
+    it 'delegates to #run' do
+      double = stub(start: 'double')
       Snp::CLI.stubs(:new).returns(double)
 
-      Snp::CLI.parse_options.must_equal 'double'
+      Snp::CLI.run.must_equal 'double'
     end
   end
 
   describe '#parse' do
-    class TestStream
-      attr_reader :output, :error
-
-      def initialize
-        @output = ''
-        @error  = ''
-      end
-
-      def out(message)
-        @output << message
-      end
-
-      def err(message)
-        @error << message
-      end
-    end
-
     def no_exit(&block)
       block.call
     rescue SystemExit
+    end
+
+    it 'prints help message when no arguments are passed' do
+      stream = TestStream.new
+      cli    = Snp::CLI.new([], stream)
+
+      no_exit { cli.parse }
+
+      stream.output.wont_be_nil
     end
 
     it 'can print version' do
@@ -69,9 +79,21 @@ describe Snp::CLI do
       stream = TestStream.new
       cli = Snp::CLI.new(['--count', '3', 'some_name', 'snp'], stream)
 
-      no_exit { cli.parse }
+      lambda {
+        no_exit { cli.parse }
+      }.must_raise(Snp::InvalidOptions)
+    end
+  end
 
-      stream.error.must_match /Invalid option: some_name/
+  describe '#start' do
+    it 'writes the compiled version to its output stream' do
+      stream = TestStream.new
+      cli = Snp::CLI.new(['snp'], stream)
+      Snp::Compiler.stubs(:build).returns('compiled snippet')
+
+      cli.start
+
+      stream.output.must_equal 'compiled snippet'
     end
   end
 end

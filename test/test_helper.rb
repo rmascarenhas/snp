@@ -6,3 +6,6 @@ require 'minitest/pride'
 require 'mocha/setup'
 
 require 'snp'
+
+# unset any possibly set `SNP_PATH` variable
+ENV.delete('SNP_PATH')

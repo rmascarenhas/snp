@@ -38,30 +38,13 @@ module Snp
     # Returns a string with the compiled template.
     def compile(context)
       if template_content
-        ERB.new(template_content).result(context)
+        ERB.new(template_content, 0, '-').result(context)
       else
         raise TemplateNotFound.new(@file, @path.absolute_paths)
       end
     end
 
     private
-
-    # Internal: appends an ERB extension to the template file name passed, unless it already
-    # contains one.
-    #
-    # template - the template file name.
-    #
-    # Examples:
-    #
-    # append_extension('template.erb') # => 'template.erb'
-    # append_extension('template')     # => 'template.erb'
-    def append_extension(template)
-      if has_erb_extension?(template)
-        template
-      else
-        template + '.erb'
-      end
-    end
 
     # Internal: returns a string with the content of the template file.
     def template_content
