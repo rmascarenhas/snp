@@ -73,6 +73,7 @@ module Snp
     # Internal: actually does the parsing job and compiles the snippet.
     def start
       template_name, template_data = parse
+      set_template_extension(template_name)
 
       snippet = Compiler.build(template_name, template_data)
 
@@ -182,7 +183,13 @@ module Snp
     #
     # content - the content of the tempfile.
     def with_tempfile_for(content)
-      file = Tempfile.new('snp')
+      if @extension
+        identifiers = ['snp', @extension]
+      else
+        identifiers = 'snp'
+      end
+
+      file = Tempfile.new(identifiers)
       file.write(content)
       file.rewind
 
@@ -211,6 +218,22 @@ module Snp
     # Internal: checks whether or not any arguments were passed on the command line.
     def no_options_passed?
       @params.empty?
+    end
+
+    # Internal: returns the extension for a template name, to be used in the 
+    # generated snippet.
+    #
+    # name - the template name.
+    #
+    # Example
+    #
+    #   set_template_extesion('snp.html') # => @extension is '.html'
+    def set_template_extension(name)
+      match_data = name.match(/.+(\..+)/)
+
+      if match_data
+        @extension = match_data[1]
+      end
     end
   end
 end
