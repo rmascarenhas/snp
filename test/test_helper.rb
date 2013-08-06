@@ -9,3 +9,7 @@ require 'snp'
 
 # unset any possibly set `SNP_PATH` variable
 ENV.delete('SNP_PATH')
+
+# unset editors by default
+ENV.delete('SNP_EDITOR')
+ENV.delete('EDITOR')

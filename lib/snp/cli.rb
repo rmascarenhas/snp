@@ -1,3 +1,4 @@
+require 'tempfile'
 require 'slop'
 
 module Snp
@@ -52,8 +53,8 @@ module Snp
     #
     # arguments - an array of arguments that should be parsed. Defaults to `ARGV`.
     #
-    # This method returns an array in which the first element is the template name and the
-    # second are the data that should be used to compile the template.
+    # This method generates the snippet and fires your text editor in case it is set up,
+    # or prints the snippet to the standard output.
     def self.run(arguments = ARGV.dup)
       new(arguments).start
     end
@@ -74,7 +75,8 @@ module Snp
       template_name, template_data = parse
 
       snippet = Compiler.build(template_name, template_data)
-      @stream.out(snippet)
+
+      edit(snippet) || @stream.out(snippet)
     rescue => exception
       @stream.err exception.message
       help_and_exit
@@ -156,6 +158,38 @@ module Snp
     def print_and_exit(message)
       @stream.out message
       exit
+    end
+
+    # Internal: returns the editor that should be used when editing a generated
+    # snippet. Looks for editor names in the `SNP_EDITOR` and `EDITOR` environment
+    # variables, respectively.
+    def editor
+      @_editor ||= ENV['SNP_EDITOR'] || ENV['EDITOR']
+    end
+
+    # Internal: Opens the preferred text editor with the content of a snippet.
+    #
+    # snippet - a string with the snippet content that should be edited.
+    def edit(snippet)
+      if editor
+        with_tempfile_for(snippet) do |file|
+          Process.exec "#{editor} '#{file.path}'"
+        end
+      end
+    end
+
+    # Internal: creates a `Tempfile` object the given content and yields it for use.
+    #
+    # content - the content of the tempfile.
+    def with_tempfile_for(content)
+      file = Tempfile.new('snp')
+      file.write(content)
+      file.rewind
+
+      yield file
+    ensure
+      file.close
+      file.unlink
     end
 
     # Internal: the program name to be used when generating output to the user.
