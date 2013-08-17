@@ -28,6 +28,11 @@ describe Snp::TemplateContext do
     context.sad?.must_equal false
   end
 
+  it 'changes dash for underscore in generated methods' do
+    context = Snp::TemplateContext.new('is-awesome' => true)
+    context.is_awesome?.must_equal true
+  end
+
   it 'politely responds to methods named after context keys' do
     context = Snp::TemplateContext.new(snp: 'snp')
     context.must_respond_to(:snp)

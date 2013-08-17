@@ -37,7 +37,8 @@ module Snp
       @context = context
 
       context.each do |property, value|
-        define_property(property, value)
+        method_name = prepare(property)
+        define_property(method_name, value)
       end
     end
 
@@ -58,6 +59,18 @@ module Snp
     end
 
     private
+
+    # Internal: returns a propperty name with underscores where dashes were present.
+    #
+    # name - the property name.
+    #
+    # Examples
+    #
+    #   prepare('name')       # => 'name'
+    #   prepare('update-ref') # => 'update_ref'
+    def prepare(name)
+      name.to_s.gsub('-', '_')
+    end
 
     # Internal: defines a method with `property` name, and returning `value`.
     # If `value` is a boolean, this method will also define a predicate method.
