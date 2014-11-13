@@ -2,21 +2,21 @@ PATH
   remote: .
   specs:
     snp (0.1.rc0)
-      slop
+      slop (~> 3.6)
 
 GEM
   remote: http://rubygems.org/
   specs:
-    metaclass (0.0.1)
-    mocha (0.14.0)
+    metaclass (0.0.4)
+    mocha (1.1.0)
       metaclass (~> 0.0.1)
-    rake (10.0.4)
-    slop (3.4.5)
+    rake (10.3.2)
+    slop (3.6.0)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  mocha
+  mocha (~> 1.1)
   rake
   snp!
