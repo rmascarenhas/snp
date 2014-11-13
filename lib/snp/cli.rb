@@ -175,7 +175,7 @@ module Snp
     #
     # snippet - a string with the snippet content that should be edited.
     def edit(snippet)
-      if editor
+      if editor && !editor.empty?
         with_tempfile_for(snippet) do |file|
           Process.exec "#{editor} '#{file.path}'"
         end
