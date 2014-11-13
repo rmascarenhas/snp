@@ -18,7 +18,7 @@ module Snp
 
       def initialize(property)
         @missing_property = property.to_s
-        super
+        super %(Insufficient context: no defined value for property "#{missing_property}")
       end
     end
 
