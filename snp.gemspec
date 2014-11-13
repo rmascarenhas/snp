@@ -17,8 +17,6 @@ Gem::Specification.new do |s|
   s.require_paths = ['lib']
 
   s.add_runtime_dependency 'slop'
-
   s.add_development_dependency 'mocha'
-
   s.rubyforge_project = 'snp'
 end
