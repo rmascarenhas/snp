@@ -2,7 +2,7 @@ require 'tempfile'
 require 'slop'
 
 module Snp
-  # Snp::StandardStream
+  # Snp::Printer
   #
   # This class is responsible for outputing string in normal output and error streams.
   # It defaults to `STDOUT` and `STDERR`, respectively but can be used to generate output
@@ -10,10 +10,10 @@ module Snp
   #
   # Example
   #
-  #   stream = Snp::StandardStream.new
+  #   stream = Snp::Printer.new
   #   stream.out('Hello')  # => 'Hello' is written to the standard output
   #   stream.err('ERROR!') # => 'ERROR!' is written to the standard error
-  class StandardStream
+  class Printer
     def initialize(out = STDOUT, err = STDERR)
       @out = out
       @err = err
@@ -59,15 +59,18 @@ module Snp
       new(arguments).start
     end
 
+    attr_reader :printer
+
     # Internal: creates a new `Snp::CLI` instance.
     #
-    # params - array of arguments.
-    # stream - the stream to be used when there is feedback to be given to the user. This
-    #          object must respond to `out` and `err` for normal and error situations.
-    def initialize(params, stream = StandardStream.new)
+    # params  - array of arguments.
+    # printer - the printer object through which feedback messages are sent to.
+    #           The passed object must respond to `out` and `err` for normal
+    #           and error situations, respectively.
+    def initialize(params, printer = Printer.new)
       @params  = params
       @options = {}
-      @stream  = stream
+      @printer = printer
     end
 
     # Internal: actually does the parsing job and compiles the snippet.
@@ -77,9 +80,9 @@ module Snp
 
       snippet = Compiler.build(template_name, template_data)
 
-      edit(snippet) || @stream.out(snippet)
+      edit(snippet) || printer.out(snippet)
     rescue => exception
-      @stream.err exception.message
+      printer.err exception.message
       help_and_exit
     end
 
@@ -113,7 +116,7 @@ module Snp
     #   # command is '--project snp --language ruby template_name'
     #   parse_dynamic_options # => { 'project' => 'snp', 'language' => 'ruby' }
     def parse_dynamic_options
-      if @params.empty?
+      if no_options_passed?
         {}
       else
         dynamic_parser.parse!(@params)
@@ -157,7 +160,7 @@ module Snp
     #
     # This method finishes the current process with a success exit status.
     def print_and_exit(message)
-      @stream.out message
+      printer.out message
       exit
     end
 
@@ -206,7 +209,7 @@ module Snp
 
     # Internal: prints help message and exits with a failure exit status.
     def help_and_exit
-      @stream.err help_message
+      printer.err help_message
       exit 1
     end
 

@@ -2,7 +2,7 @@ require 'test_helper'
 require 'snp/cli'
 
 describe Snp::CLI do
-  class TestStream
+  class TestPrinter
     attr_reader :output, :error
 
     def initialize
@@ -35,30 +35,30 @@ describe Snp::CLI do
     end
 
     it 'prints help message when no arguments are passed' do
-      stream = TestStream.new
-      cli    = Snp::CLI.new([], stream)
+      printer = TestPrinter.new
+      cli     = Snp::CLI.new([], printer)
 
       no_exit { cli.parse }
 
-      stream.output.wont_be_nil
+      printer.output.wont_be_nil
     end
 
     it 'can print version' do
-      stream = TestStream.new
-      cli    = Snp::CLI.new(['-V'], stream)
+      printer = TestPrinter.new
+      cli     = Snp::CLI.new(['-V'], printer)
 
       no_exit { cli.parse }
 
-      stream.output.must_equal Snp::VERSION
+      printer.output.must_equal Snp::VERSION
     end
 
     it 'can print help message' do
-      stream = TestStream.new
-      cli    = Snp::CLI.new(['-h'], stream)
+      printer = TestPrinter.new
+      cli    = Snp::CLI.new(['-h'], printer)
 
       no_exit { cli.parse }
 
-      stream.output.wont_be_nil
+      printer.output.wont_be_nil
     end
 
     it 'retrieves the template name' do
@@ -76,8 +76,8 @@ describe Snp::CLI do
     end
 
     it 'throws an error if more than one template name is given' do
-      stream = TestStream.new
-      cli = Snp::CLI.new(['--count', '3', 'some_name', 'snp'], stream)
+      printer = TestPrinter.new
+      cli = Snp::CLI.new(['--count', '3', 'some_name', 'snp'], printer)
 
       lambda {
         no_exit { cli.parse }
@@ -87,13 +87,13 @@ describe Snp::CLI do
 
   describe '#start' do
     it 'writes the compiled version to its output stream' do
-      stream = TestStream.new
-      cli = Snp::CLI.new(['snp'], stream)
+      printer = TestPrinter.new
+      cli = Snp::CLI.new(['snp'], printer)
       Snp::Compiler.stubs(:build).returns('compiled snippet')
 
       cli.start
 
-      stream.output.must_equal 'compiled snippet'
+      printer.output.must_equal 'compiled snippet'
     end
   end
 end
