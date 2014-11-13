@@ -59,7 +59,7 @@ module Snp
       new(arguments).start
     end
 
-    attr_reader :printer
+    attr_reader :printer, :template_name
 
     # Internal: creates a new `Snp::CLI` instance.
     #
@@ -75,8 +75,7 @@ module Snp
 
     # Internal: actually does the parsing job and compiles the snippet.
     def start
-      template_name, template_data = parse
-      set_template_extension(template_name)
+      @template_name, template_data = parse
 
       snippet = Compiler.build(template_name, template_data)
 
@@ -176,30 +175,19 @@ module Snp
     # snippet - a string with the snippet content that should be edited.
     def edit(snippet)
       if editor && !editor.empty?
-        with_tempfile_for(snippet) do |file|
-          Process.exec "#{editor} '#{file.path}'"
-        end
+        snippet_file = file_for(snippet)
+        Process.exec "#{editor} '#{snippet_file}'"
       end
     end
 
-    # Internal: creates a `Tempfile` object the given content and yields it for use.
+    # Internal: creates a file in the working directory to wihch the snippet
+    # contents will be written to, allowing it to be edited.
     #
-    # content - the content of the tempfile.
-    def with_tempfile_for(content)
-      if @extension
-        identifiers = ['snp', @extension]
-      else
-        identifiers = 'snp'
+    # content - the content of the final snippet.
+    def file_for(content)
+      "snp_#{template_name}".tap do |file_name|
+        File.open(file_name, "w+") { |f| f.write(content) }
       end
-
-      file = Tempfile.new(identifiers)
-      file.write(content)
-      file.rewind
-
-      yield file
-    ensure
-      file.close
-      file.unlink
     end
 
     # Internal: the program name to be used when generating output to the user.
@@ -223,19 +211,15 @@ module Snp
       @params.empty?
     end
 
-    # Internal: returns the extension for a template name, to be used in the 
+    # Internal: returns the extension of the template name, to be used in the 
     # generated snippet.
-    #
-    # name - the template name.
-    #
-    # Example
-    #
-    #   set_template_extesion('snp.html') # => @extension is '.html'
-    def set_template_extension(name)
-      match_data = name.match(/.+(\..+)/)
+    def template_extension
+      @_extension ||= begin
+        match_data = template_name.match(/.+(\..+)/)
 
-      if match_data
-        @extension = match_data[1]
+        # set it to the empty string in case there is no extension to allow for
+        # proper memoization of its value
+        match_data ? match_data[1] : ""
       end
     end
   end
