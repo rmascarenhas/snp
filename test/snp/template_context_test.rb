@@ -38,6 +38,11 @@ describe Snp::TemplateContext do
     context.must_respond_to(:snp)
   end
 
+  it 'responds to method names in its normalized forms' do
+    context = Snp::TemplateContext.new(:"gem-name" => 'snp')
+    context.must_respond_to(:gem_name)
+  end
+
   it 'raises proper error when called with non-existing property' do
     context = Snp::TemplateContext.new(snp: 'snp')
     lambda {

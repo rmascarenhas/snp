@@ -37,7 +37,7 @@ module Snp
       @context = context
 
       context.each do |property, value|
-        method_name = prepare(property)
+        method_name = normalize(property)
         define_property(method_name, value)
       end
     end
@@ -47,7 +47,7 @@ module Snp
     end
 
     def respond_to_missing?(method, *)
-      @context.has_key?(method)
+      @context.has_key?(normalize(method))
     end
 
     # In case an unknown method is called on the template context, we raise a proper
@@ -68,7 +68,7 @@ module Snp
     #
     #   prepare('name')       # => 'name'
     #   prepare('update-ref') # => 'update_ref'
-    def prepare(name)
+    def normalize(name)
       name.to_s.gsub('-', '_')
     end
 
