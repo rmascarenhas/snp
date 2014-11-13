@@ -32,6 +32,12 @@ describe Snp::Path do
       subject.which('snp', 'erb').must_equal File.expand_path('~/.snp/snp.erb')
     end
 
+    it 'finds the snippet in case it has more than one extension' do
+      File.stubs(:exists?).returns(true)
+
+      subject.which('snp.erb.js', 'js').must_equal File.expand_path('~/.snp/snp.erb.js')
+    end
+
     it 'does not append extension if it template already has it' do
       File.stubs(:exists?).returns(true)
 

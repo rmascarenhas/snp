@@ -58,7 +58,8 @@ module Snp
     #
     # template - the template file name.
     def has_extension?(template, extension)
-      template[-4, 4] == ".#{extension}"
+      comparison_length = extension.size + 1 # account for the separator `.`
+      template[-comparison_length, comparison_length] == ".#{extension}"
     end
 
     # Internal: appends a given extension to the template file name, unless it is
