@@ -34,7 +34,7 @@ module Snp
     private
 
     # Internal: builds the ERB context to be used to generate the snippet.
-    # Consists of the default that for the template plus the extra options
+    # Consists of the default for the template plus the extra options
     # passed on initialization.
     def compilation_context
       TemplateContext.for(default_data.merge(@options))

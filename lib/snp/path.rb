@@ -8,7 +8,7 @@ module Snp
   #
   #   Snp::Path.new.which('jquery') # => '/etc/snp/jquery.erb'
   class Path
-    # Internal: returns the list of absolute paths to the directories in which
+    # Public: returns the list of absolute paths to the directories in which
     # the templates should be looked.
     def absolute_paths
       dir_list.map { |d| File.expand_path(d) }
@@ -69,13 +69,13 @@ module Snp
     #
     # Examples
     #
-    #   with_extension('template', 'erb')    # => 'template.erb'
-    #   with_extension('template.erb', 'erb' # => 'template.erb'
+    #   with_extension('template', 'erb')     # => 'template.erb'
+    #   with_extension('template.erb', 'erb') # => 'template.erb'
     def with_extension(template, extension)
       if has_extension?(template, extension)
         template
       else
-        template + ".#{extension}"
+        [template, extension].join(".")
       end
     end
   end
