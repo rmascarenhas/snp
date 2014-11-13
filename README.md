@@ -95,6 +95,16 @@ $ snp --name David --country UK
 # => "Hello, my anme is David, and I'm from UK."
 ~~~
 
+### Installation
+
+As easy as
+
+~~~console
+$ gem install snp
+~~~
+
+If you prefer, you can also download a standalone version at [http://renatomascarenhas.name/snp](http://renatomascarenhas.name/snp).
+
 ### Contributions/Bugs
 
 Email me, or create an issue/pull request on the GitHub repository.
