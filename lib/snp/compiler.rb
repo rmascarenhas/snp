@@ -44,13 +44,7 @@ module Snp
     #
     # Returns a hash with the default data if available, or an empty hash otherwise.
     def default_data
-      data_file = path.which(@template, 'yml')
-
-      if data_file
-        YAML.load_file(data_file)
-      else
-        {}
-      end
+      Data.for(@template)
     end
 
     def template
