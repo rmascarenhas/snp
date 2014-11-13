@@ -61,7 +61,7 @@ list of directories in pretty much the same way that the shell's `PATH` does.
 `.erb` extension.
 
 * You do not have fill in every piece of dynamic content in the command line when
-creating a new template from a template. They can have defaults and you can define
+creating a new snippet from a template. They can have defaults and you can define
 them by placing a yaml file with the same name as the template with the default
 contents of each dynamic piece of content in the template. Note that arguments
 passed to the command line override those definitions.
@@ -85,14 +85,14 @@ Now you can create snippets from that template using the default values using ju
 
 ~~~console
 $ snp introduction.txt
-# => content is "Hello, my name is Renato, and I'm from Brazil."
+# => "Hello, my name is Renato, and I'm from Brazil."
 ~~~
 
 You can override specific values when creating a new snippet as well:
 
 ~~~console
 $ snp --name David --country UK
-# => content is "Hello, my anme is David, and I'm from UK.
+# => "Hello, my anme is David, and I'm from UK."
 ~~~
 
 ### Contributions/Bugs
