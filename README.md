@@ -111,4 +111,4 @@ Email me, or create an issue/pull request on the GitHub repository.
 
 ### License
 
-MIT. See `MIT-LICENSE` file for details.
+MIT. See `COPYING` file for details.
