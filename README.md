@@ -92,7 +92,7 @@ You can override specific values when creating a new snippet as well:
 
 ~~~console
 $ snp --name David --country UK
-# => "Hello, my anme is David, and I'm from UK."
+# => "Hello, my name is David, and I'm from UK."
 ~~~
 
 ### Installation
